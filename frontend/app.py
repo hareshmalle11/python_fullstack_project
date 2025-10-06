@@ -479,7 +479,11 @@ with tabs[2]:
                         st.markdown(f"### Parked Vehicles (Type ID {type_id})")
                         st.dataframe(df)
                     else:
+<<<<<<< HEAD
                         st.markdown(f"<p class='success-message'>No vehicles parked yet</p>", unsafe_allow_html=True)
+=======
+                        st.markdown(f"<p class='success-message'>No Vehicles Parked till Now</p>", unsafe_allow_html=True)
+>>>>>>> 6b54c86d940710d49d64d58e131c9a17dbb22c8d
                 else:
                     st.markdown(f"<p class='error-message'>{result.get('detail', 'Failed to fetch status')}</p>", unsafe_allow_html=True)
             except Exception as e:
@@ -496,7 +500,11 @@ with tabs[2]:
                         st.markdown(f"### Parked Vehicles (Type ID {type_id})")
                         st.dataframe(df)
                     else:
+<<<<<<< HEAD
                         st.markdown(f"<p class='success-message'>No vehicles parked yet</p>", unsafe_allow_html=True)
+=======
+                        st.markdown(f"<p class='success-message'>No vehicles Parked till Now</p>", unsafe_allow_html=True)
+>>>>>>> 6b54c86d940710d49d64d58e131c9a17dbb22c8d
                 else:
                     st.markdown(f"<p class='error-message'>{result.get('detail', 'Failed to fetch status')}</p>", unsafe_allow_html=True)
             except Exception as e:
@@ -513,7 +521,11 @@ with tabs[2]:
                         st.markdown(f"### Parked Vehicles (Type ID {type_id})")
                         st.dataframe(df)
                     else:
+<<<<<<< HEAD
                         st.markdown(f"<p class='success-message'>No vehicles parked yet</p>", unsafe_allow_html=True)
+=======
+                        st.markdown(f"<p class='success-message'>No Vehicles Parked till Now</p>", unsafe_allow_html=True)
+>>>>>>> 6b54c86d940710d49d64d58e131c9a17dbb22c8d
                 else:
                     st.markdown(f"<p class='error-message'>{result.get('detail', 'Failed to fetch status')}</p>", unsafe_allow_html=True)
             except Exception as e:
