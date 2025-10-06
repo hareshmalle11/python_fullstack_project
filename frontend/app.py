@@ -3,64 +3,255 @@ import requests
 import pandas as pd
 
 # FastAPI backend URL
-API_URL = "http://127.0.0.1:8000"
+API_URL = "https://park-backend-5vgz.onrender.com"
 
 # Inject custom CSS
 st.markdown("""
     <style>
+        /* Global styles */
+        .stApp {
+            background: linear-gradient(135deg, #0c2461 0%, #1e3799 50%, #4a69bd 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #f5f6fa;
+        }
+        
+        /* Hide number input spinners */
         button.step-up {display: none;}
         button.step-down {display: none;}
-        .stApp {
-            background-color: black;
-            font-family: 'Arial', sans-serif;
-        }
-        .stButton > button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        .stButton > button:hover {
-            background-color: #45a049;
-        }
-        .stTextInput > div > div > input, .stNumberInput > div > div > input {
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 10px;
-        }
+        
+        /* Main title styling */
         h1 {
-            color: #333333;
+            color: #f5f6fa;
             text-align: center;
             padding: 20px;
+            font-weight: 700;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #4CAF50, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+        
+        /* Button styling */
+        .stButton > button {
+            background: linear-gradient(135deg, #4CAF50 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        
+        .stButton > button:hover {
+            background: linear-gradient(135deg, #45a049 0%, #27ae60 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Input field styling */
+        .stTextInput > div > div > input, 
+        .stNumberInput > div > div > input {
+            border: 2px solid #4a69bd;
+            border-radius: 8px;
+            padding: 12px 16px;
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .stTextInput > div > div > input:focus, 
+        .stNumberInput > div > div > input:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+            background-color: white;
+        }
+        
+        /* Select box styling */
+        .stSelectbox > div > div > select {
+            border: 2px solid #4a69bd;
+            border-radius: 8px;
+            padding: 12px 16px;
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .stSelectbox > div > div > select:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+            background-color: white;
+        }
+        
+        /* Admin container styling */
         .admin-container {
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 20px;
+            right: 20px;
             z-index: 1000;
-            width: 250px;
-            background-color: #ffffff;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #2c3e50;
         }
-        .stSelectbox > div > div > select {
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 10px;
-            width: 100%;
+        
+        /* Tab styling */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 8px;
+            background-color: transparent;
         }
-        .stTextInput > div > div > input {
-            width: 100%;
+        
+        .stTabs [data-baseweb="tab"] {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px 8px 0 0;
+            padding: 12px 24px;
+            font-weight: 600;
+            border: none;
+            color: #f5f6fa;
+            transition: all 0.3s ease;
         }
+        
+        .stTabs [data-baseweb="tab"]:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .stTabs [aria-selected="true"] {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+        }
+        
+        /* Form styling */
         .stForm {
-            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .hidden {
-            display: none;
+        
+        /* Table styling */
+        .dataframe {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dataframe thead th {
+            background: linear-gradient(135deg, #4CAF50 0%, #2ecc71 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .dataframe tbody tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .dataframe tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Success and error messages */
+        .success-message {
+            color: #2ecc71;
+            background-color: rgba(46, 204, 113, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #2ecc71;
+            font-weight: 600;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+            font-weight: 600;
+        }
+        
+        /* Column styling for buttons */
+        .stColumns {
+            gap: 16px;
+        }
+        
+        .stColumn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Header styling */
+        .stHeader {
+            color: #f5f6fa;
+            font-weight: 700;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+        
+        /* Info box styling */
+        .stInfo {
+            background: rgba(52, 152, 219, 0.2);
+            border: 1px solid rgba(52, 152, 219, 0.5);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(76, 175, 80, 0.6);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(76, 175, 80, 0.8);
+        }
+        
+        /* Animation for form submission */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stForm {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .admin-container {
+                position: relative;
+                width: 100%;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 """, unsafe_allow_html=True)
@@ -288,7 +479,7 @@ with tabs[2]:
                         st.markdown(f"### Parked Vehicles (Type ID {type_id})")
                         st.dataframe(df)
                     else:
-                        st.markdown(f"<p class='success-message'>No vehicles parked for type ID {type_id}</p>", unsafe_allow_html=True)
+                        st.markdown(f"<p class='success-message'>No vehicles parked yet</p>", unsafe_allow_html=True)
                 else:
                     st.markdown(f"<p class='error-message'>{result.get('detail', 'Failed to fetch status')}</p>", unsafe_allow_html=True)
             except Exception as e:
@@ -305,7 +496,7 @@ with tabs[2]:
                         st.markdown(f"### Parked Vehicles (Type ID {type_id})")
                         st.dataframe(df)
                     else:
-                        st.markdown(f"<p class='success-message'>No vehicles parked for type ID {type_id}</p>", unsafe_allow_html=True)
+                        st.markdown(f"<p class='success-message'>No vehicles parked yet</p>", unsafe_allow_html=True)
                 else:
                     st.markdown(f"<p class='error-message'>{result.get('detail', 'Failed to fetch status')}</p>", unsafe_allow_html=True)
             except Exception as e:
@@ -322,7 +513,7 @@ with tabs[2]:
                         st.markdown(f"### Parked Vehicles (Type ID {type_id})")
                         st.dataframe(df)
                     else:
-                        st.markdown(f"<p class='success-message'>No vehicles parked for type ID {type_id}</p>", unsafe_allow_html=True)
+                        st.markdown(f"<p class='success-message'>No vehicles parked yet</p>", unsafe_allow_html=True)
                 else:
                     st.markdown(f"<p class='error-message'>{result.get('detail', 'Failed to fetch status')}</p>", unsafe_allow_html=True)
             except Exception as e:
