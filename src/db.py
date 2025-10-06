@@ -5,14 +5,11 @@ from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 import httpx
 
-# Load environment variables (.env)
 load_dotenv()
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
-# Debug environment variables
-#print(f"SUPABASE_URL: {SUPABASE_URL}")
-#print(f"SUPABASE_KEY: {SUPABASE_KEY[:10]}...")  # Partial key for safety
+
 if not SUPABASE_URL or not SUPABASE_KEY:
     raise ValueError("SUPABASE_URL or SUPABASE_KEY is missing in .env file")
 

@@ -130,8 +130,8 @@ db_manager_instance = DatabaseManager()
 b=AdminManager(db_manager_instance.supabase)
 a=ParkingLogic(db_manager_instance,b)
 #b.authenticate_admin("hareshmalle11","Haresh@123")
-print(a.login_admin("hareshmalle11","Haresh@123"))
-print(a.update_vehicle_cost(2,17.0))
+#print(a.login_admin("hareshmalle11","Haresh@123"))
+#print(a.update_vehicle_cost(2,17.0))
 
 
 #print(a.get_free_slots(1))

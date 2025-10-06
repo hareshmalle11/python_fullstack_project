@@ -85,6 +85,12 @@ def add_vehicle_type(request: VehicleTypeRequest):
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
     return result
+@app.post("/update_slots")
+def update_slots(request: UpdateSlotsRequest):
+    result = parking_logic.update_vehicle_slots(request.type_id, request.new_slots)
+    if "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
+    return result
 
 @app.delete("/remove_vehicle_type/{type_id}")
 def remove_vehicle_type(type_id: int):

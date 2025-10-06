@@ -110,7 +110,7 @@ with st.container():
         st.write("Admin logged in")  # Debug to confirm state
         admin_option = st.selectbox(
         "Admin Actions",
-        ["Select Action", "Add Vehicle Type", "Update Vehicle Cost", "Add Restricted Vehicle", "Remove Restricted Vehicle"],
+        ["Select Action", "Update Parking Slots","Add Vehicle Type", "Update Vehicle Cost", "Add Restricted Vehicle", "Remove Restricted Vehicle"],
         key="admin_dropdown"
         )
         if admin_option == "Add Vehicle Type":
@@ -136,6 +136,21 @@ with st.container():
                             st.markdown(f"<p class='error-message'>Failed to connect to backend: {e}</p>", unsafe_allow_html=True)
                     else:
                         st.markdown("<p class='error-message'>Please fill all fields.</p>", unsafe_allow_html=True)
+        elif admin_option == "Update Parking Slots":
+            with st.form(key="update_slots_form"):
+                type_id_slots = st.number_input("Vehicle Type ID", min_value=1, step=1, format="%d")
+                new_slots = st.number_input("New Total Slots", min_value=0, step=1, format="%d")
+                submit_update_slots = st.form_submit_button("Update Slots")
+                if submit_update_slots:
+                    try:
+                        response = requests.post(f"{API_URL}/update_slots", json={"type_id": type_id_slots, "new_slots": new_slots})
+                        result = response.json()
+                        if response.status_code == 200:
+                            st.markdown(f"<p class='success-message'>{result['message']}</p>", unsafe_allow_html=True)
+                        else:
+                            st.markdown(f"<p class='error-message'>{result.get('detail', 'Failed to update slots')}</p>", unsafe_allow_html=True)
+                    except Exception as e:
+                        st.markdown(f"<p class='error-message'>Failed to connect to backend: {e}</p>", unsafe_allow_html=True)
 
         elif admin_option == "Update Vehicle Cost":
             with st.form(key="update_cost_form"):
@@ -203,7 +218,7 @@ with tabs[0]:
     with st.form(key="park_form"):
         name = st.text_input("Driver Name")
         vehicle_number = st.text_input("Vehicle Number")
-        type_id = st.number_input("Vehicle Type ID (Truck/Bus=1, Car/Auto=2, Bikes=3)", min_value=1, step=1, format="%d")
+        type_id = st.number_input("Vehicle Type ID [bike=1 car/auto=2 truck/bus=3]", min_value=1, step=1, format="%d")
         submit_park = st.form_submit_button("Park Vehicle")
         if submit_park:
             if name and vehicle_number and type_id:
