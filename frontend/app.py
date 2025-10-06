@@ -288,7 +288,7 @@ with tabs[2]:
                         st.markdown(f"### Parked Vehicles (Type ID {type_id})")
                         st.dataframe(df)
                     else:
-                        st.markdown(f"<p class='success-message'>No vehicles parked for type ID {type_id}</p>", unsafe_allow_html=True)
+                        st.markdown(f"<p class='success-message'>No Vehicles Parked till Now</p>", unsafe_allow_html=True)
                 else:
                     st.markdown(f"<p class='error-message'>{result.get('detail', 'Failed to fetch status')}</p>", unsafe_allow_html=True)
             except Exception as e:
@@ -305,7 +305,7 @@ with tabs[2]:
                         st.markdown(f"### Parked Vehicles (Type ID {type_id})")
                         st.dataframe(df)
                     else:
-                        st.markdown(f"<p class='success-message'>No vehicles parked for type ID {type_id}</p>", unsafe_allow_html=True)
+                        st.markdown(f"<p class='success-message'>No vehicles Parked till Now</p>", unsafe_allow_html=True)
                 else:
                     st.markdown(f"<p class='error-message'>{result.get('detail', 'Failed to fetch status')}</p>", unsafe_allow_html=True)
             except Exception as e:
@@ -322,7 +322,7 @@ with tabs[2]:
                         st.markdown(f"### Parked Vehicles (Type ID {type_id})")
                         st.dataframe(df)
                     else:
-                        st.markdown(f"<p class='success-message'>No vehicles parked for type ID {type_id}</p>", unsafe_allow_html=True)
+                        st.markdown(f"<p class='success-message'>No Vehicles Parked till Now</p>", unsafe_allow_html=True)
                 else:
                     st.markdown(f"<p class='error-message'>{result.get('detail', 'Failed to fetch status')}</p>", unsafe_allow_html=True)
             except Exception as e:
