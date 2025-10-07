@@ -522,7 +522,7 @@ with st.container():
                     result = response.json()
                     if response.status_code == 200:
                         if isinstance(result, list) and result:
-                            df = pd.DataFrame(result)[["name", "vehicle_number", "in_time"]]
+                            df = pd.DataFrame(result)[["record_id","name", "vehicle_number", "in_time"]]
                             st.dataframe(df, use_container_width=True)
                         else:
                             st.markdown(f"<p class='success-message'>✅ No Vehicles Parked</p>", unsafe_allow_html=True)
@@ -538,7 +538,7 @@ with st.container():
                     result = response.json()
                     if response.status_code == 200:
                         if isinstance(result, list) and result:
-                            df = pd.DataFrame(result)[["name", "vehicle_number", "in_time"]]
+                            df = pd.DataFrame(result)[["record_id","name", "vehicle_number", "in_time"]]
                             st.dataframe(df, use_container_width=True)
                         else:
                             st.markdown(f"<p class='success-message'>✅ No Vehicles Parked</p>", unsafe_allow_html=True)
@@ -554,7 +554,7 @@ with st.container():
                     result = response.json()
                     if response.status_code == 200:
                         if isinstance(result, list) and result:
-                            df = pd.DataFrame(result)[["name", "vehicle_number", "in_time"]]
+                            df = pd.DataFrame(result)[["record_id","name", "vehicle_number", "in_time"]]
                             st.dataframe(df, use_container_width=True)
                         else:
                             st.markdown(f"<p class='success-message'>✅ No Vehicles Parked</p>", unsafe_allow_html=True)
