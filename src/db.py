@@ -166,36 +166,50 @@ class DatabaseManager:
             response = self.supabase.table("parking_records").insert(record).execute()
             new_parked_count = parked_res.data["parked"] + 1 if parked_res.data else 1
             self.supabase.table("parking_slots").update({"parked": new_parked_count}).eq("type_id", type_id).execute()
-            return f"Hello {name}! Your vehicle {response.data[0]['vehicle_number']} is parked with parking ID: {response.data[0]['record_id']}"
+            return f"Hello {name}! Your vehicle {response.data[0]['vehicle_number']} is parked successfully."
 
-    def release_slot(self, record_id: int):
-        """Release a parking slot and calculate cost."""
-        # Fetch parking record
-        record_res = self.supabase.table("parking_records").select("*").eq("record_id", record_id).single().execute()
+
+    def release_slot(self, vehicle_number: str):
+        """Release a parking slot using vehicle number and calculate cost."""
+
+        # Fetch active parking record (vehicle_number match and not yet unparked)
+        record_res = (self.supabase.table("parking_records").select("*").eq("vehicle_number", vehicle_number).is_("out_time", None).execute() )
+
         if not record_res.data:
-            return {"error": "Record not found"}
-        record = record_res.data
-
-
+            return {"error": "Invalid vehicle number or already unparked."}
+        record = record_res.data[0]  # Get the first record
         type_id = record["type_id"]
-        
-        # Fetch cost per hour
-        type_res = self.supabase.table("vehicle_types").select("cost_per_hour").eq("type_id", type_id).single().execute()
+        #record = record_res.data
+        #type_id = record["type_id"]
+
+        # Fetch cost per hour for the vehicle type
+        type_res = (
+            self.supabase
+            .table("vehicle_types")
+            .select("cost_per_hour")
+            .eq("type_id", type_id)
+            .single()
+            .execute()
+        )
+
         if not type_res.data:
-            return {"error": "Vehicle type not found"}
+            return {"error": "Vehicle type not found."}
+
         cost_per_hour = float(type_res.data["cost_per_hour"])
 
-        # Calculate parking duration and cost
+        # Calculate total parking duration and cost
         in_time = datetime.fromisoformat(record["in_time"])
         out_time = datetime.now()
-        hours = max(1, (out_time - in_time).total_seconds() / 3600)  # Minimum 1 hour
+        hours = max(1, (out_time - in_time).total_seconds() / 3600)  # At least 1 hour charge
         total_cost = round(hours * cost_per_hour, 2)
 
-        # Update parking record
+        # Update parking record with out_time and cost
         self.supabase.table("parking_records").update({
             "out_time": out_time.isoformat(),
             "cost": total_cost
-        }).eq("record_id", record_id).execute()
+        }).eq("vehicle_number", vehicle_number).is_("out_time", None).execute()
+
+
 
         # Decrement parked count
         parked_res = self.supabase.table("parking_slots").select("parked").eq("type_id", type_id).single().execute()

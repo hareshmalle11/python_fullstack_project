@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 
 # FastAPI backend URL
-API_URL = "https://park-backend-5vgz.onrender.com"
+API_URL = "http://127.0.0.1:8000"
 
 # Inject custom CSS
 st.markdown("""
@@ -472,12 +472,12 @@ with st.container():
     with tabs[1]:
         st.header("Unpark a Vehicle")
         with st.form(key="unpark_form"):
-            parking_id = st.number_input("Parking ID", min_value=1, step=1, format="%d", placeholder="Enter parking ID")
+            vehicle_number = st.text_input("Vehicle Number", placeholder="Enter vehicle number")
             submit_unpark = st.form_submit_button("🚪 Unpark Vehicle")
             if submit_unpark:
-                if parking_id:
+                if vehicle_number:
                     try:
-                        response = requests.post(f"{API_URL}/unpark", json={"parking_id": parking_id})
+                        response = requests.post(f"{API_URL}/unpark", json={"vehicle_number": vehicle_number})
                         result = response.json()
                         if response.status_code == 200 and "message" in result:
                             st.markdown(f"<p class='success-message'>✅ {result['message']}</p>", unsafe_allow_html=True)
@@ -486,7 +486,7 @@ with st.container():
                     except Exception as e:
                         st.markdown(f"<p class='error-message'>❌ Failed to connect to backend: {e}</p>", unsafe_allow_html=True)
                 else:
-                    st.markdown("<p class='error-message'>❌ Please enter a parking ID.</p>", unsafe_allow_html=True)
+                    st.markdown("<p class='error-message'>❌ Please enter a vehicle number.</p>", unsafe_allow_html=True)
     
     with tabs[2]:
         st.header("Parking Status")
@@ -522,7 +522,7 @@ with st.container():
                     result = response.json()
                     if response.status_code == 200:
                         if isinstance(result, list) and result:
-                            df = pd.DataFrame(result)[["record_id","name", "vehicle_number", "in_time"]]
+                            df = pd.DataFrame(result)[[ "name", "vehicle_number", "in_time"]]
                             st.dataframe(df, use_container_width=True)
                         else:
                             st.markdown(f"<p class='success-message'>✅ No Vehicles Parked</p>", unsafe_allow_html=True)
@@ -538,7 +538,7 @@ with st.container():
                     result = response.json()
                     if response.status_code == 200:
                         if isinstance(result, list) and result:
-                            df = pd.DataFrame(result)[["record_id","name", "vehicle_number", "in_time"]]
+                            df = pd.DataFrame(result)[[ "name", "vehicle_number", "in_time"]]
                             st.dataframe(df, use_container_width=True)
                         else:
                             st.markdown(f"<p class='success-message'>✅ No Vehicles Parked</p>", unsafe_allow_html=True)
@@ -554,7 +554,7 @@ with st.container():
                     result = response.json()
                     if response.status_code == 200:
                         if isinstance(result, list) and result:
-                            df = pd.DataFrame(result)[["record_id","name", "vehicle_number", "in_time"]]
+                            df = pd.DataFrame(result)[[ "name", "vehicle_number", "in_time"]]
                             st.dataframe(df, use_container_width=True)
                         else:
                             st.markdown(f"<p class='success-message'>✅ No Vehicles Parked</p>", unsafe_allow_html=True)

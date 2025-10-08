@@ -87,20 +87,23 @@ class ParkingLogic:
         return self.db_manager.admin_remove_restricted_vehicle(vehicle_number)
 
     def park_vehicle(self, name:str,vehicle_number: str, type_id: int):
+        vehicle_number=vehicle_number.upper()
         result= self.db_manager.allocate_slot(name,vehicle_number, type_id)
         if result:
             return result
         else:
             return "No available slots."
 
-    def unpark_vehicle(self, parking_id: int):
+    def unpark_vehicle(self, vehicle_number: str):
+
         """Release slot and calculate parking cost."""
-        result = self.db_manager.release_slot(parking_id)
+        vehicle_number=vehicle_number.upper()
+        result = self.db_manager.release_slot(vehicle_number)
         if result:
             return result
             
         else:
-            return "❌ Invalid parking ID or vehicle already unparked."
+            return "❌ Invalid it already unparked or not found."
 
     def get_parking_status(self):
         return self.db_manager.get_status_report()

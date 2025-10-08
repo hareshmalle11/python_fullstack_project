@@ -31,7 +31,7 @@ class ParkRequest(BaseModel):
     type_id: int
 
 class UnparkRequest(BaseModel):
-    parking_id: int
+    vehicle_number: str
 
 class UpdateSlotsRequest(BaseModel):
     type_id: int
@@ -142,10 +142,10 @@ def park_vehicle(request: ParkRequest):
 
 @app.post("/unpark")
 def unpark_vehicle(request: UnparkRequest):
-    result = parking_logic.unpark_vehicle(request.parking_id)
-    if isinstance(result, str) and "Thank you" in result:
+    result = parking_logic.unpark_vehicle(request.vehicle_number)
+    if isinstance(result, str):
         return {"message": result}
-    elif isinstance(result, dict) and "error" in result:
+    elif isinstance(result, dict):
         raise HTTPException(status_code=400, detail=result["error"])
     return result
 
