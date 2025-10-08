@@ -439,7 +439,7 @@ with st.container():
 with st.container():
     
     # Add tabs for non-admin operations
-    tabs = st.tabs(["🚗 Park Vehicle", "🚪 Unpark Vehicle", "📊 View Status"])
+    tabs = st.tabs(["🚗 Park Vehicle", "🚪 Unpark Vehicle", "📊 View Status", "🔍 Filter"])
     
     with tabs[0]:
         st.header("Park a Vehicle")
@@ -562,3 +562,113 @@ with st.container():
                         st.markdown(f"<p class='error-message'>❌ {result.get('detail', 'Failed to fetch status')}</p>", unsafe_allow_html=True)
                 except Exception as e:
                     st.markdown(f"<p class='error-message'>❌ Failed to connect to backend: {e}</p>", unsafe_allow_html=True)
+    with tabs[3]:  # Filter tab
+        st.header("Filter Parking Records")
+        
+        # ───────────────────────────────
+        # Option 1: Filter by Vehicle Number
+        # ───────────────────────────────
+        st.subheader("Get all Parking records of Vehicle")
+        with st.form(key="vehicle_records_form"):
+            vehicle_number_filter = st.text_input("Vehicle Number", placeholder="e.g., KA-01-AB-1234")
+            submit_vehicle_filter = st.form_submit_button("🔍 Search Records")
+
+            if submit_vehicle_filter:
+                if vehicle_number_filter:
+                    try:
+                        response = requests.post(f"{API_URL}/vehicle_records", json={"vehicle_number": vehicle_number_filter})
+                        response.raise_for_status()
+                        result = response.json()
+
+                        if isinstance(result, dict) and "message" in result:
+                            st.info(result["message"])
+                        elif isinstance(result, list) and result:
+                            df = pd.DataFrame(result)[["name", "vehicle_number", "type_id", "in_time", "out_time", "cost"]]
+                            df["in_time"] = pd.to_datetime(df["in_time"]).dt.strftime("%Y-%m-%d %H:%M:%S")
+                            df["out_time"] = pd.to_datetime(df["out_time"]).dt.strftime("%Y-%m-%d %H:%M:%S")
+                            st.dataframe(df, use_container_width=True)
+                        else:
+                            st.warning("❌ No records found.")
+                    except Exception as e:
+                        st.error(f"❌ Failed to connect to backend: {e}")
+                else:
+                    st.warning("❌ Please enter a vehicle number.")
+        
+        # ───────────────────────────────
+        # Option 2: Filter Vehicles by Date
+        # ───────────────────────────────
+        # ───────────────────────────────
+        # Option 2: Filter Vehicles by Date
+        # ───────────────────────────────
+        st.subheader("🚗 Filter Vehicles by Date")
+
+        # Step 1: Choose Filter Type
+        filter_choice = st.radio(
+            "Select Filter Mode",
+            ["Date Range", "Specific Date"],
+            horizontal=True
+        )
+
+        # Step 2: Common Vehicle Type Selector
+        type_id_filter = st.selectbox(
+            "Vehicle Type (Optional)",
+            options=[0, 1, 2, 3],
+            format_func=lambda x: {0: "All Types", 1: "🚲 Bike", 2: "🚗 Car/Auto", 3: "🚛 Truck/Bus"}[x]
+        )
+
+        # Step 3: Conditional Inputs Based on Filter Mode
+        if filter_choice == "Date Range":
+            st.write("### 📅 Filter by Date Range")
+            start_date = st.date_input("Start Date")
+            end_date = st.date_input("End Date")
+            search_range = st.button("🔍 Search ")
+
+            if search_range:
+                try:
+                    payload = {
+                        "start_date": str(start_date),
+                        "end_date": str(end_date),
+                        "type_id": type_id_filter if type_id_filter != 0 else None
+                    }
+                    response = requests.post(f"{API_URL}/vehicles_by_date_range", json=payload)
+                    response.raise_for_status()
+                    result = response.json()
+
+                    if isinstance(result, dict) and "message" in result:
+                        st.info(result["message"])
+                    elif isinstance(result, list) and result:
+                        df = pd.DataFrame(result)[["name", "vehicle_number", "type_id", "in_time", "out_time", "cost"]]
+                        df["in_time"] = pd.to_datetime(df["in_time"]).dt.strftime("%Y-%m-%d %H:%M:%S")
+                        df["out_time"] = pd.to_datetime(df["out_time"]).dt.strftime("%Y-%m-%d %H:%M:%S")
+                        st.dataframe(df, use_container_width=True)
+                    else:
+                        st.warning("❌ No records found.")
+                except Exception as e:
+                    st.error(f"❌ Failed to connect to backend: {e}")
+
+        elif filter_choice == "Specific Date":
+            st.write("### 📆 Filter by Specific Date")
+            specific_date = st.date_input("Specific Date")
+            search_specific = st.button("🔍 Search ")
+
+            if search_specific:
+                try:
+                    payload = {
+                        "specific_date": str(specific_date),
+                        "type_id": type_id_filter if type_id_filter != 0 else None
+                    }
+                    response = requests.post(f"{API_URL}/vehicles_by_specific_date", json=payload)
+                    response.raise_for_status()
+                    result = response.json()
+
+                    if isinstance(result, dict) and "message" in result:
+                        st.info(result["message"])
+                    elif isinstance(result, list) and result:
+                        df = pd.DataFrame(result)[["name", "vehicle_number", "type_id", "in_time", "out_time", "cost"]]
+                        df["in_time"] = pd.to_datetime(df["in_time"]).dt.strftime("%Y-%m-%d %H:%M:%S")
+                        df["out_time"] = pd.to_datetime(df["out_time"]).dt.strftime("%Y-%m-%d %H:%M:%S")
+                        st.dataframe(df, use_container_width=True)
+                    else:
+                        st.warning("❌ No records found.")
+                except Exception as e:
+                    st.error(f"❌ Failed to connect to backend: {e}")

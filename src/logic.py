@@ -129,6 +129,29 @@ class ParkingLogic:
             return updated
         else:
             return "❌ Failed to update slots (check limits or constraints)."
+        
+
+
+
+
+
+
+
+    def get_vehicle_records(self, vehicle_number: str):
+        """Get all parking records for a specific vehicle number."""
+        vehicle_number=vehicle_number.upper()
+        return self.db_manager.get_vehicle_records(vehicle_number)
+
+
+    def get_vehicles_by_date_range(self, start_date: str, end_date: str, type_id: int = None):
+        """Get all vehicle records (parked or unparked) between two given dates."""
+        return self.db_manager.get_vehicles_by_date_range(start_date, end_date, type_id)
+
+
+    def get_vehicles_by_specific_date(self, specific_date: str, type_id: int = None):
+        """Get all vehicle records (parked or unparked) for a specific date."""
+        return self.db_manager.get_vehicles_by_specific_date(specific_date, type_id)
+
 db_manager_instance = DatabaseManager()
 b=AdminManager(db_manager_instance.supabase)
 a=ParkingLogic(db_manager_instance,b)

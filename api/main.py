@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 import sys
+from typing import Optional
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.db import DatabaseManager
 from src.logic import ParkingLogic, AdminManager
@@ -62,6 +64,28 @@ class UpdateTypeNameRequest(BaseModel):
 
 class RestrictedVehicleRequest(BaseModel):
     vehicle_number: str
+
+
+
+
+#new block
+class VehicleRecordsRequest(BaseModel):
+    vehicle_number: str
+
+
+class VehiclesByDateRangeRequest(BaseModel):
+    start_date: str
+    end_date: str
+    type_id: Optional[int] = None
+
+
+class VehiclesBySpecificDateRequest(BaseModel):
+    specific_date: str
+    type_id: Optional[int] = None
+
+
+#end of new block
+
 
 # API endpoints
 @app.get("/")
@@ -169,6 +193,36 @@ def get_parking_id_status(request: ParkingIDStatusRequest):
     if isinstance(result, dict) and "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
     return result
+
+
+
+#new block
+@app.post("/vehicle_records")
+def get_vehicle_records(request: VehicleRecordsRequest):
+    """Fetch all parking records for a given vehicle number."""
+    result = parking_logic.get_vehicle_records(request.vehicle_number)
+    return result if not (isinstance(result, dict) and "message" in result) else result
+
+
+@app.post("/vehicles_by_date_range")
+def get_vehicles_by_date_range(request: VehiclesByDateRangeRequest):
+    """Fetch all vehicles (parked or unparked) between two given dates."""
+    result = parking_logic.get_vehicles_by_date_range(
+        request.start_date, request.end_date, request.type_id
+    )
+    return result if not (isinstance(result, dict) and "message" in result) else result
+
+
+@app.post("/vehicles_by_specific_date")
+def get_vehicles_by_specific_date(request: VehiclesBySpecificDateRequest):
+    """Fetch all vehicles (parked or unparked) for a specific date."""
+    result = parking_logic.get_vehicles_by_specific_date(
+        request.specific_date, request.type_id
+    )
+    return result if not (isinstance(result, dict) and "message" in result) else result
+#end of new block
+
+
 
 if __name__ == "__main__":
     import uvicorn

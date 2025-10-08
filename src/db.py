@@ -247,6 +247,55 @@ class DatabaseManager:
                 .execute()
             )
             return records.data if records.data else {"message": "No vehicles currently parked of this type"}
+    
+
+
+
+
+
+
+
+
+
+
+    def get_vehicle_records(self, vehicle_number: str):
+        """Fetch all parking records for a given vehicle number."""
+        response = (self.supabase.table("parking_records")
+                    .select("name, vehicle_number, type_id, in_time, out_time, cost")
+                    .eq("vehicle_number", vehicle_number)
+                    .execute())
+        return response.data if response.data else {"message": "No records found for this vehicle number."}
+    def get_vehicles_by_date_range(self, start_date: str, end_date: str, type_id: int = None):
+        """Fetch all vehicles (parked or unparked) between two given dates."""
+        query = (
+            self.supabase.table("parking_records")
+            .select("name, vehicle_number, type_id, in_time, out_time, cost")
+            .gte("in_time", f"{start_date}T00:00:00")
+            .lte("in_time", f"{end_date}T23:59:59")
+        )
+
+        if type_id is not None:
+            query = query.eq("type_id", type_id)
+
+        response = query.execute()
+        return response.data if response.data else {"message": "No records found between the given dates."}
+    
+    def get_vehicles_by_specific_date(self, specific_date: str, type_id: int = None):
+        """Fetch all vehicles (parked or unparked) for a specific date."""
+        query = (
+            self.supabase.table("parking_records")
+            .select("name, vehicle_number, type_id, in_time, out_time, cost")
+            .gte("in_time", f"{specific_date}T00:00:00")
+            .lte("in_time", f"{specific_date}T23:59:59")
+        )
+
+        if type_id is not None:
+            query = query.eq("type_id", type_id)
+
+        response = query.execute()
+        return response.data if response.data else {"message": "No records found for the specified date."}
+
+    
 a=DatabaseManager()
 #print(a.get_free_slots(1))
 #print(a.update_vehicle_slots(3,10)) 
